@@ -13,6 +13,7 @@ import { SET_AMENITIES_BOOKMARK, SET_FOOD_BOOKMARK, SET_GASSTATION_BOOKMARK, SET
 import Loader from '../loader/Loader';
 import { auth } from '@/firebase/firebase';
 import { toast } from 'react-toastify';
+import { useInfoStore } from '@/store/info';
 
 const InfoList = ({ num }) => {
 
@@ -44,13 +45,17 @@ const InfoList = ({ num }) => {
 
 
 
+  const { setAllInfo, allHighwayInfo } = useInfoStore();
+
   // 모든 데이터 저장
   const getHighwayInfo = useCallback(async () => {
     setIsLoading(true);
     try {
       // url로부터 정보를 받아와 저장
       const res = await axios.get(url);
-      dispatch(SET_ALL_INFO(res));
+      // dispatch(SET_ALL_INFO(res));
+      setAllInfo(res);
+      console.log(allHighwayInfo)
 
       // firebase로부터 정보를 받아와 저장
       switch(pathname) {
