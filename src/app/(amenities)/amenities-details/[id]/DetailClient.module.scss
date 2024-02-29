@@ -1,0 +1,16 @@
+.container {
+  padding: 30px 40px;
+
+  .brand {
+    margin-top: 20px;
+    padding: 20px 0;
+    font-size: 30px;
+    color: var(--color-brown-4);
+  }
+
+  .box-wrapper{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+}

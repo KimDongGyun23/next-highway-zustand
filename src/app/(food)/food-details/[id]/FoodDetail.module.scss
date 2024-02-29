@@ -1,0 +1,36 @@
+.container {
+  padding: 30px 40px;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .recommend-desc {
+      display: flex;
+      color: var(--color-brown-3);
+
+      p {
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
+        
+        svg {
+          margin: 0 5px;
+          font-size: 25px;
+        }
+      }
+    }
+  }
+
+  .title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    svg {
+      font-size: 25px;
+      margin-left: 10px;
+    }
+  }
+}

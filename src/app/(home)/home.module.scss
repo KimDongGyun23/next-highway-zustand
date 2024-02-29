@@ -1,0 +1,34 @@
+.main {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  position: relative;
+
+  .image {
+    height: calc(100vh - var(--header-size));
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 80%;
+      vertical-align: bottom;
+    }
+  }
+
+  .title {
+    position: absolute;
+    right: 5%;
+    bottom: 20%;
+
+    padding: 10px;
+    text-align: right;
+
+    p {
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 40px;
+      font-weight: 900;
+      line-height: 40px;
+    }
+  }
+}

@@ -1,0 +1,31 @@
+.container {
+  padding: 30px;
+  
+  .title {
+    font-size: 30px;
+    font-weight: 900;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--color-brown-2);
+    text-align: center;
+  }
+
+  li {
+    text-align: right;
+    margin: 0 20px;
+    list-style: none;
+    padding: 10px 10px 10px 0;
+    font-size: 18px;
+    font-weight: 700;
+
+    &:hover{
+      background-color: var(--color-brown-2);
+      opacity: 70%;
+    }
+  }
+
+  .active {
+    border: 1px solid var(--color-brown-2);
+    border-left: 5px solid var(--color-brown-3);
+  }
+
+}
