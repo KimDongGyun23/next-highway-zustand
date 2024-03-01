@@ -14,18 +14,17 @@ import Loader from '../loader/Loader';
 import { auth } from '@/firebase/firebase';
 import { toast } from 'react-toastify';
 import { useInfoStore } from '@/store/info';
+import { useBookmarkStore } from '@/store/bookmark';
 
 const InfoList = ({ num }) => {
 
   const [isLoading, setIsLoading] = useState(false);
+  const { setAllInfo, filteredInfo, infoPerPage, currentPage } = useInfoStore();
 
   const router = useRouter();
   const dispatch = useDispatch();
   const pathname = usePathname();
 
-  const filteredInfo = useSelector(selectFilteredInfo);
-  const infoPerPage = useSelector(selectInfoPerPage);
-  const currentPage = useSelector(selectCurrentPage);
 
   // 현재 페이지와 다음 페이지의 첫 번째 인덱스 계산
   const firstIndexOfNextPage = currentPage * infoPerPage;
@@ -37,25 +36,27 @@ const InfoList = ({ num }) => {
   // 정보 가져올 URL - svarGsstClassCd => 0:휴게소  1:주유소
   const url = `https://data.ex.co.kr/openapi/restinfo/hiwaySvarInfoList?key=test&type=json&svarGsstClssCd=${num}`;
 
+  const {
+    amenitiesBookmarkedList: amenities,
+    foodBookmarkedList: food,
+    gasStationBookmarkedList: gasStation,
+    parkingBookmarkedList: parking
+  } = useBookmarkStore();
 
-  const amenities = useSelector(selectAmenitiesBookmarkedList);
-  const food = useSelector(selectFoodBookmarkedList);
-  const gasStation = useSelector(selectGasStationBookmarkedList);
-  const parking = useSelector(selectParkingBookmarkedList);
+  // const amenities = useSelector(selectAmenitiesBookmarkedList);
+  // const food = useSelector(selectFoodBookmarkedList);
+  // const gasStation = useSelector(selectGasStationBookmarkedList);
+  // const parking = useSelector(selectParkingBookmarkedList);
 
 
 
-  const { setAllInfo, allHighwayInfo } = useInfoStore();
 
   // 모든 데이터 저장
   const getHighwayInfo = useCallback(async () => {
     setIsLoading(true);
     try {
       // url로부터 정보를 받아와 저장
-      const res = await axios.get(url);
-      // dispatch(SET_ALL_INFO(res));
-      setAllInfo(res);
-      console.log(allHighwayInfo)
+      setAllInfo(url);
 
       // firebase로부터 정보를 받아와 저장
       switch(pathname) {

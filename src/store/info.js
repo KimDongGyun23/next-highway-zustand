@@ -1,4 +1,21 @@
+import axios from "axios";
+
 const { create } = require("zustand");
+
+// 문자 정렬 함수
+
+const sortByOrder = (list) => {
+  const sortedList = list.sort((a, b) => {
+    const nameA = a.svarNm;
+    const nameB = b.svarNm;
+  
+    if (nameA < nameB) { return -1; }
+    if (nameA > nameB) { return 1; }
+    return 0;
+  });
+
+  return sortedList;
+}
 
 export const useInfoStore = create((set)=>({
   allHighwayInfo : [],  // 모든 정보
@@ -6,25 +23,19 @@ export const useInfoStore = create((set)=>({
   currentPage : 1,      // 현재 페이지
   infoPerPage : 7,      // 한 페이지 당 보여줄 정보의 개수
 
-  setAllInfo: (res) => {
-    // 문자 정렬
-    const temp = res.data.list.sort((a, b) => {
-      const nameA = a.svarNm;
-      const nameB = b.svarNm;
-    
-      if (nameA < nameB) { return -1; }
-      if (nameA > nameB) { return 1; }
-      return 0;
-    });
+  setAllInfo: async (url) => {
+    const res = await axios.get(url);
+    const sortedList = sortByOrder(res.data.list);
 
     set({
-      allHighwayInfo: temp.map(({ svarCd, svarNm, svarAddr }) => ({
+      allHighwayInfo: sortedList.map(({ svarCd, svarNm, svarAddr }) => ({
         svarCd,
         svarNm,
         svarAddr,
         isBookmarked: false,
       })),
-      filteredInfo: temp.map(({ svarCd, svarNm, svarAddr }) => ({
+      
+      filteredInfo: sortedList.map(({ svarCd, svarNm, svarAddr }) => ({
         svarCd,
         svarNm,
         svarAddr,
@@ -33,7 +44,15 @@ export const useInfoStore = create((set)=>({
     })
   },
 
+  setFilteredInfo: (infos) => set({ filteredInfo: infos }),
+
   setCurrentPage: (page) => set({ currentPage: page }),
+
+
+
+
+
+
 
   toggleBookmarked: (svarCd) => {
     set((state) => ({

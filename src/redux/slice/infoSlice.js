@@ -11,34 +11,6 @@ const infoSlice = createSlice({
   name: 'info',
   initialState,
   reducers: {
-    SET_ALL_INFO: (state, action)=>{
-      const res = action.payload;
-
-      // 문자 정렬
-      const temp = res.data.list.sort((a, b) => {
-        const nameA = a.svarNm;
-        const nameB = b.svarNm;
-      
-        if (nameA < nameB) { return -1; }
-        if (nameA > nameB) { return 1; }
-        return 0;
-      });
-
-      state.allHighwayInfo = temp.map(({svarCd, svarNm, svarAddr}) => ({
-        svarCd, svarNm, svarAddr,
-        isBookmarked : false
-      }));
-      state.filteredInfo = state.allHighwayInfo;
-    },
-
-    SET_FILTERED_INFO: (state, action)=>{
-      state.filteredInfo = action.payload;
-    },
-
-    SET_CURRENT_PAGE: (state, action)=>{
-      state.currentPage = action.payload;
-    },
-    
     TOGGLE_BOOKMARKED: (state, action)=>{
       state.filteredInfo.forEach(obj => {
         if (obj.svarCd === action.payload) {

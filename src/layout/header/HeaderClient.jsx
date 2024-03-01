@@ -5,16 +5,15 @@ import Link from 'next/link'
 import Button from '@/components/button/Button'
 import { auth } from '@/firebase/firebase'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
-import { useDispatch, useSelector } from 'react-redux'
-import { REMOVE_ACTIVE_USER, SET_ACTIVE_USER, selectIsLoggedIn } from '@/redux/slice/authSlice'
+import { useDispatch } from 'react-redux'
 import { usePathname, useRouter } from 'next/navigation'
 import { SET_ALL_RESET } from '@/redux/slice/bookmarkSlice'
 import { toast } from 'react-toastify'
+import { useAuthStore } from '@/store/auth'
 
 const HeaderClient = () => {
   const [displayName, setDisplayName] = useState('');
-
-  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const { setActiveUser, removeActiveUser, isLoggedIn } = useAuthStore();
   
   const router = useRouter();
   const dispatch = useDispatch();
@@ -29,17 +28,17 @@ const HeaderClient = () => {
         const uName = u1.charAt(0).toUpperCase() + u1.slice(1);
         setDisplayName(uName);
 
-        // 유저 정보를 리덕스 스토어에 저장하기
-        dispatch(SET_ACTIVE_USER({
+        // 유저 정보 저장하기
+        setActiveUser({
           email: user.email,
           userName: displayName,
           userID: user.uid
-        }))
+        });
 
 
       } else {
         setDisplayName('');
-        dispatch(REMOVE_ACTIVE_USER());
+        removeActiveUser();
       }
     })
   }, [dispatch, displayName])

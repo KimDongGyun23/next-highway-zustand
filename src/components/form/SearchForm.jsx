@@ -1,16 +1,14 @@
 import { useDebounce } from '@/hooks/useDebounce';
-import { SET_FILTERED_INFO, selectAllHighwayInfo } from '@/redux/slice/infoSlice';
+import { useInfoStore } from '@/store/info';
 import React, { useEffect, useState } from 'react'
 import { IoSearchSharp } from "react-icons/io5";
-import { useDispatch, useSelector } from 'react-redux';
 
 const SearchForm = () => {
 
-  const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
 
-  const allHighwayInfo = useSelector(selectAllHighwayInfo);
+  const { allHighwayInfo, setFilteredInfo } = useInfoStore();
 
 
   // 검색어가 해당 항목에 포함되어 있는지 확인
@@ -19,7 +17,7 @@ const SearchForm = () => {
       item.svarNm.includes(debouncedSearch) || item.svarAddr.includes(debouncedSearch)
     ));
 
-    dispatch(SET_FILTERED_INFO(filteredResults));
+    setFilteredInfo(filteredResults);
   },[debouncedSearch])
 
   return (
