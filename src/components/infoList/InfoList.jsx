@@ -37,7 +37,7 @@ const InfoList = ({ num }) => {
   const firstIndexOfCurrentPage = firstIndexOfNextPage - infoPerPage;
 
   // 현재 페이지에 보여지는 정보
-  const currentProducts = filteredInfo?.slice( firstIndexOfCurrentPage, firstIndexOfNextPage )
+  const currentProducts = filteredInfo?.slice( firstIndexOfCurrentPage, firstIndexOfNextPage );
 
   // 정보 가져올 URL - svarGsstClassCd => 0:휴게소  1:주유소
   const url = `https://data.ex.co.kr/openapi/restinfo/hiwaySvarInfoList?key=test&type=json&svarGsstClssCd=${num}`;
@@ -55,7 +55,7 @@ const InfoList = ({ num }) => {
     setIsLoading(true);
     try {
       // url로부터 정보를 받아와 저장
-      setAllInfo(url);
+      initializeStore(url);
 
       // firebase로부터 정보를 받아와 저장
       switch(pathname) {

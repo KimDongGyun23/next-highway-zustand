@@ -10,10 +10,12 @@ import { usePathname, useRouter } from 'next/navigation'
 import { SET_ALL_RESET } from '@/redux/slice/bookmarkSlice'
 import { toast } from 'react-toastify'
 import { useAuthStore } from '@/store/auth'
+import { useBookmarkStore } from '@/store/bookmark'
 
 const HeaderClient = () => {
   const [displayName, setDisplayName] = useState('');
   const { setActiveUser, removeActiveUser, isLoggedIn } = useAuthStore();
+  const { setAllReset } = useBookmarkStore();
   
   const router = useRouter();
   const dispatch = useDispatch();
@@ -52,7 +54,9 @@ const HeaderClient = () => {
       await signOut(auth);
       toast.success("로그아웃 되었습니다.");
       router.replace('/');
-      dispatch(SET_ALL_RESET());
+      // dispatch(SET_ALL_RESET());
+      setAllReset();
+
     } 
     catch (error) {
       console.log(error);
