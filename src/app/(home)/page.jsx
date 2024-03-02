@@ -12,12 +12,12 @@ import { useBookmarkStore } from "@/store/bookmark";
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { getDataFromFirebase } = useBookmarkStore();
+  // const { getDataFromFirebase } = useBookmarkStore();
 
   const getFirebaseData = async () => {
     const docSnap = await getDoc(doc(db, "bookmarked", auth.currentUser.uid));
-    // dispatch(GET_DATA_FROM_FIREBASE(docSnap.data()));
-    getDataFromFirebase(docSnap.data());
+    dispatch(GET_DATA_FROM_FIREBASE(docSnap.data()));
+    // getDataFromFirebase(docSnap.data());
   }
 
   useEffect(() => {

@@ -51,20 +51,20 @@ export const useInfoStore = create((set)=>({
   setCurrentPage: (page) => set({ currentPage: page }),
 
 
-  // toggleBookmarked: (svarCd) => {
-  //   set((state) => ({
-  //     filteredInfo: state.filteredInfo.map((obj) =>
-  //       obj.svarCd === svarCd
-  //         ? { ...obj, isBookmarked: !obj.isBookmarked }
-  //         : obj
-  //     ),
-  //     allHighwayInfo: state.allHighwayInfo.map((obj) =>
-  //       obj.svarCd === svarCd
-  //         ? { ...obj, isBookmarked: !obj.isBookmarked }
-  //         : obj
-  //     ),
-  //   }));
-  // },
+  toggleBookmarked: (svarCd) => {
+    set((state) => ({
+      filteredInfo: state.filteredInfo.map((obj) =>
+        obj.svarCd === svarCd
+          ? { ...obj, isBookmarked: !obj.isBookmarked }
+          : obj
+      ),
+      allHighwayInfo: state.allHighwayInfo.map((obj) =>
+        obj.svarCd === svarCd
+          ? { ...obj, isBookmarked: !obj.isBookmarked }
+          : obj
+      ),
+    }));
+  },
 
   setInitialBookmarked: (dataArr) => {
     set((state) => ({

@@ -20,11 +20,11 @@ const InfoList = ({ num }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const { 
-    setAllInfo, 
+    initializeStore, 
     filteredInfo, 
     infoPerPage, 
     currentPage,
-    toggleBookmarked
+    toggleBookmarked,
   } = useInfoStore();
 
   const router = useRouter();
