@@ -1,25 +1,32 @@
 'use client'
-import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react'
 import styles from './InfoList.module.scss'
 import Pagination from '@/components/pagination/Pagination';
 import SearchForm from '@/components/form/SearchForm';
 import { usePathname, useRouter } from 'next/navigation';
 import Sidebar from '@/layout/sidebar/Sidebar';
-import { useDispatch, useSelector } from 'react-redux';
-import { SET_ALL_INFO, SET_INITIAL_BOOKMARKED, TOGGLE_BOOKMARKED, selectCurrentPage, selectFilteredInfo, selectInfoPerPage } from '@/redux/slice/infoSlice';
+import { useDispatch } from 'react-redux';
+import { SET_INITIAL_BOOKMARKED } from '@/redux/slice/infoSlice';
 import { FaRegStar, FaStar  } from "react-icons/fa";
-import { SET_AMENITIES_BOOKMARK, SET_FOOD_BOOKMARK, SET_GASSTATION_BOOKMARK, SET_PARKING_BOOKMARK, selectAmenitiesBookmarkedList, selectFoodBookmarkedList, selectGasStationBookmarkedList, selectParkingBookmarkedList } from '@/redux/slice/bookmarkSlice';
 import Loader from '../loader/Loader';
-import { auth } from '@/firebase/firebase';
+import { auth, db } from '@/firebase/firebase';
 import { toast } from 'react-toastify';
 import { useInfoStore } from '@/store/info';
 import { useBookmarkStore } from '@/store/bookmark';
+import { doc, setDoc } from 'firebase/firestore';
 
 const InfoList = ({ num }) => {
 
   const [isLoading, setIsLoading] = useState(false);
-  const { setAllInfo, filteredInfo, infoPerPage, currentPage } = useInfoStore();
+  const { 
+    initializeStore, 
+    filteredInfo,
+    allHighwayInfo,
+    infoPerPage, 
+    currentPage,
+    setFilteredInfo,
+    setAllInfo
+  } = useInfoStore();
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -31,7 +38,7 @@ const InfoList = ({ num }) => {
   const firstIndexOfCurrentPage = firstIndexOfNextPage - infoPerPage;
 
   // 현재 페이지에 보여지는 정보
-  const currentProducts = filteredInfo?.slice( firstIndexOfCurrentPage, firstIndexOfNextPage )
+  const currentProducts = filteredInfo?.slice( firstIndexOfCurrentPage, firstIndexOfNextPage );
 
   // 정보 가져올 URL - svarGsstClassCd => 0:휴게소  1:주유소
   const url = `https://data.ex.co.kr/openapi/restinfo/hiwaySvarInfoList?key=test&type=json&svarGsstClssCd=${num}`;
@@ -43,12 +50,12 @@ const InfoList = ({ num }) => {
     parkingBookmarkedList: parking
   } = useBookmarkStore();
 
-  // const amenities = useSelector(selectAmenitiesBookmarkedList);
-  // const food = useSelector(selectFoodBookmarkedList);
-  // const gasStation = useSelector(selectGasStationBookmarkedList);
-  // const parking = useSelector(selectParkingBookmarkedList);
-
-
+  const {
+    setAmenitiesBookmark,
+    setFoodBookmark,
+    setGasStationBookmark,
+    setParkingBookmark,
+  } = useBookmarkStore();
 
 
   // 모든 데이터 저장
@@ -56,7 +63,7 @@ const InfoList = ({ num }) => {
     setIsLoading(true);
     try {
       // url로부터 정보를 받아와 저장
-      setAllInfo(url);
+      initializeStore(url);
 
       // firebase로부터 정보를 받아와 저장
       switch(pathname) {
@@ -81,15 +88,34 @@ const InfoList = ({ num }) => {
     router.push(`${pathname}-details/${svarCd}`);
   }
 
+  const toggleBookmarked = (svarCd) => {
+    setFilteredInfo(filteredInfo.map((obj) =>
+        obj.svarCd === svarCd
+          ? { ...obj, isBookmarked: !obj.isBookmarked }
+          : obj
+      )
+    );
+  
+    setAllInfo(
+      allHighwayInfo.map((obj) =>
+        obj.svarCd === svarCd
+          ? { ...obj, isBookmarked: !obj.isBookmarked }
+          : obj
+      )
+    );
+  };
+
   const handleSaveClick = (infoObj)=>{
     if (auth?.currentUser){
       switch(pathname) {
-        case '/amenities':    dispatch(SET_AMENITIES_BOOKMARK(infoObj)); break;
-        case '/food':         dispatch(SET_FOOD_BOOKMARK(infoObj)); break;
-        case '/gas-station' : dispatch(SET_GASSTATION_BOOKMARK(infoObj)); break;
-        case '/parking' :     dispatch(SET_PARKING_BOOKMARK(infoObj)); break;
+        case '/amenities':    setAmenitiesBookmark(infoObj); break;
+        case '/food':         setFoodBookmark(infoObj); break;
+        case '/gas-station' : setGasStationBookmark(infoObj); break;
+        case '/parking' :     setParkingBookmark(infoObj); break;
       }
-      dispatch(TOGGLE_BOOKMARKED(infoObj.svarCd));
+
+
+      toggleBookmarked(infoObj.svarCd);
     }
     else {
       toast.warning("로그인이 필요합니다.");

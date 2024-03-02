@@ -23,7 +23,7 @@ export const useInfoStore = create((set)=>({
   currentPage : 1,      // 현재 페이지
   infoPerPage : 7,      // 한 페이지 당 보여줄 정보의 개수
 
-  setAllInfo: async (url) => {
+  initializeStore: async (url) => {
     const res = await axios.get(url);
     const sortedList = sortByOrder(res.data.list);
 
@@ -44,30 +44,27 @@ export const useInfoStore = create((set)=>({
     })
   },
 
+  setAllInfo: (infos) => set({ allHighwayInfo: infos }),
+
   setFilteredInfo: (infos) => set({ filteredInfo: infos }),
 
   setCurrentPage: (page) => set({ currentPage: page }),
 
 
-
-
-
-
-
-  toggleBookmarked: (svarCd) => {
-    set((state) => ({
-      filteredInfo: state.filteredInfo.map((obj) =>
-        obj.svarCd === svarCd
-          ? { ...obj, isBookmarked: !obj.isBookmarked }
-          : obj
-      ),
-      allHighwayInfo: state.allHighwayInfo.map((obj) =>
-        obj.svarCd === svarCd
-          ? { ...obj, isBookmarked: !obj.isBookmarked }
-          : obj
-      ),
-    }));
-  },
+  // toggleBookmarked: (svarCd) => {
+  //   set((state) => ({
+  //     filteredInfo: state.filteredInfo.map((obj) =>
+  //       obj.svarCd === svarCd
+  //         ? { ...obj, isBookmarked: !obj.isBookmarked }
+  //         : obj
+  //     ),
+  //     allHighwayInfo: state.allHighwayInfo.map((obj) =>
+  //       obj.svarCd === svarCd
+  //         ? { ...obj, isBookmarked: !obj.isBookmarked }
+  //         : obj
+  //     ),
+  //   }));
+  // },
 
   setInitialBookmarked: (dataArr) => {
     set((state) => ({
