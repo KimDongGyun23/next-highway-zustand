@@ -1,25 +1,31 @@
 'use client'
-import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react'
 import styles from './InfoList.module.scss'
 import Pagination from '@/components/pagination/Pagination';
 import SearchForm from '@/components/form/SearchForm';
 import { usePathname, useRouter } from 'next/navigation';
 import Sidebar from '@/layout/sidebar/Sidebar';
-import { useDispatch, useSelector } from 'react-redux';
-import { SET_ALL_INFO, SET_INITIAL_BOOKMARKED, TOGGLE_BOOKMARKED, selectCurrentPage, selectFilteredInfo, selectInfoPerPage } from '@/redux/slice/infoSlice';
+import { useDispatch } from 'react-redux';
+import { SET_INITIAL_BOOKMARKED } from '@/redux/slice/infoSlice';
 import { FaRegStar, FaStar  } from "react-icons/fa";
-import { SET_AMENITIES_BOOKMARK, SET_FOOD_BOOKMARK, SET_GASSTATION_BOOKMARK, SET_PARKING_BOOKMARK, selectAmenitiesBookmarkedList, selectFoodBookmarkedList, selectGasStationBookmarkedList, selectParkingBookmarkedList } from '@/redux/slice/bookmarkSlice';
 import Loader from '../loader/Loader';
-import { auth } from '@/firebase/firebase';
+import { auth, db } from '@/firebase/firebase';
 import { toast } from 'react-toastify';
 import { useInfoStore } from '@/store/info';
 import { useBookmarkStore } from '@/store/bookmark';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { useBookmark } from '@/hooks/useBookmark';
 
 const InfoList = ({ num }) => {
 
   const [isLoading, setIsLoading] = useState(false);
-  const { setAllInfo, filteredInfo, infoPerPage, currentPage } = useInfoStore();
+  const { 
+    setAllInfo, 
+    filteredInfo, 
+    infoPerPage, 
+    currentPage,
+    toggleBookmarked
+  } = useInfoStore();
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -40,16 +46,9 @@ const InfoList = ({ num }) => {
     amenitiesBookmarkedList: amenities,
     foodBookmarkedList: food,
     gasStationBookmarkedList: gasStation,
-    parkingBookmarkedList: parking
+    parkingBookmarkedList: parking,
+    setFoodBookmark,
   } = useBookmarkStore();
-
-  // const amenities = useSelector(selectAmenitiesBookmarkedList);
-  // const food = useSelector(selectFoodBookmarkedList);
-  // const gasStation = useSelector(selectGasStationBookmarkedList);
-  // const parking = useSelector(selectParkingBookmarkedList);
-
-
-
 
   // 모든 데이터 저장
   const getHighwayInfo = useCallback(async () => {
@@ -81,20 +80,55 @@ const InfoList = ({ num }) => {
     router.push(`${pathname}-details/${svarCd}`);
   }
 
+  const getBookmarkArray = (pathname) => {
+    switch (pathname) {
+      case '/amenities': return amenities;
+      case '/food': return food;
+      case '/gas-station': return gasStation;
+      case '/parking': return parking;
+      default: return [];
+    }
+  };
+
   const handleSaveClick = (infoObj)=>{
     if (auth?.currentUser){
-      switch(pathname) {
-        case '/amenities':    dispatch(SET_AMENITIES_BOOKMARK(infoObj)); break;
-        case '/food':         dispatch(SET_FOOD_BOOKMARK(infoObj)); break;
-        case '/gas-station' : dispatch(SET_GASSTATION_BOOKMARK(infoObj)); break;
-        case '/parking' :     dispatch(SET_PARKING_BOOKMARK(infoObj)); break;
-      }
-      dispatch(TOGGLE_BOOKMARKED(infoObj.svarCd));
+      const updateArr = useBookmark(infoObj, getBookmarkArray(pathname));
+
+      const bookmarkedList = { 
+        amenities, 
+        food, 
+        gasStation, 
+        parking, 
+        [pathname.slice(1)] : updateArr 
+      };
+      
+      setFoodBookmark(updateArr);
+      firebaseUpdate(bookmarkedList);
+      toggleBookmarked(infoObj.svarCd);
     }
     else {
       toast.warning("로그인이 필요합니다.");
     }
   }
+
+
+  const firebaseUpdate = (bookmarkedList) => {
+    // firebase 업데이트
+    auth?.currentUser && (
+      setDoc(doc(db, "bookmarked", auth.currentUser.uid), {
+          userId : auth.currentUser.uid,
+          userEmail : auth.currentUser.email,
+          ...bookmarkedList
+        })
+    )
+  }
+
+
+
+
+
+
+  
 
   return (
     <div className={styles.container}>

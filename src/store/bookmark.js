@@ -7,5 +7,11 @@ export const useBookmarkStore = create((set)=>({
   parkingBookmarkedList : [],
   storageId : "",
 
+  setAmenitiesBookmark: (bookmarkArr) => set({ amenitiesBookmarkedList: bookmarkArr }),
+  setFoodBookmark: (bookmarkArr) => set({ foodBookmarkedList: bookmarkArr }),
+  setGasStationBookmark: (bookmarkArr) => set({ gasStationBookmarkedList: bookmarkArr }),
+  setParkingBookmark: (bookmarkArr) => set({ parkingBookmarkedList: bookmarkArr }),
+
+  
 
 }))
